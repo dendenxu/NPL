@@ -44,7 +44,6 @@ int main()
         case '8':
         case '9':
         case '0':
-        case '.':
             ungetc(ch, stdin);
             scanf("%lf", &num[cnt++]); //利用一个额外的数组进行数字的储存，以便double类型的实现，cnt是该数组的指针（也可以用栈直接进行实现）
             push(postfix, -cnt + 1);   //遇到数字直接进postfix
