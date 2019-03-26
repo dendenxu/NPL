@@ -10,22 +10,23 @@ int main()
     double num[MAXSTACKSIZE] = {0}; //num数组用于储存读入的数字
     int cnt = 0;                    //cnt代表num的index
 
+    printf("I'm fine now.\n");
     //读入数据并直接转换为后缀表达式
     char ch;
-    while ((ch = getchar()) != '\n')
+    while ((ch = getchar()) != '=')
     {
         if (isspace(ch)) //跳过空格
             continue;
         switch (ch)
         {
-        case '+':
-        case '-':
+        case '*':
+        case '/':
         case '(':
             push(infix, ch); //低优先级的运算符直接压栈到infix
             break;
-        case '*':
-        case '/':
-            while (peek(infix) == '+' || peek(infix) == '-')
+        case '+':
+        case '-':
+            while (peek(infix) == '*' || peek(infix) == '/')
                 push(postfix, pop(infix)); //高优先级的运算符先将infix中低优先级的出栈到postfix再压栈到infix
             push(infix, ch);
             break;
@@ -45,22 +46,24 @@ int main()
         case '9':
         case '0':
         case '.':
-            ungetchar(ch);
-            scanf("%lf", num[cnt++]); //利用一个额外的数组进行数字的储存，以便double类型的实现，cnt是该数组的指针（也可以用栈直接进行实现）
-            push(postfix, -cnt + 1);  //遇到数字直接进postfix
+            ungetc(ch, stdin);
+            scanf("%lf", &num[cnt++]); //利用一个额外的数组进行数字的储存，以便double类型的实现，cnt是该数组的指针（也可以用栈直接进行实现）
+            push(postfix, -cnt + 1);   //遇到数字直接进postfix
             break;
         }
     }
-    while (peek(infix)) //倒序postfix剩余元素进infix
+    while (peek(infix) != '0') //倒序postfix剩余元素进infix
         push(postfix, pop(infix));
 
     //计算结果
     double re; //用于储存每一次的结果
-    while ((ch = pop(postfix)))
+    int index = 0;
+    double num1, num2;
+    while ((ch = peekmid(postfix, index++)) != '0')
     {
         if (isspace(ch)) //跳过空格
             continue;
-        if (isdigit(ch)) //数字直接压栈到infix
+        if (ch <= 0) //数字直接压栈到infix
         {
             push(infix, ch);
             continue;
@@ -73,23 +76,27 @@ int main()
             push(infix, -cnt + 1);
             break;
         case '-':
-            re = num[-pop(infix)] - num[-pop(infix)];
+            num1 = num[-pop(infix)];
+            num2 = num[-pop(infix)];
+            re = num2 - num1;
             num[cnt++] = re;
             push(infix, -cnt + 1);
             break;
         case '*':
-            re = num[-pop(infix)] + num[-pop(infix)];
+            re = num[-pop(infix)] * num[-pop(infix)];
             num[cnt++] = re;
-            push(infix, -cnt * 1);
+            push(infix, -cnt + 1);
             break;
         case '/':
-            re = num[-pop(infix)] / num[-pop(infix)];
+            num1 = num[-pop(infix)];
+            num2 = num[-pop(infix)];
+            re = num2 / num1;
             num[cnt++] = re;
             push(infix, -cnt + 1);
             break;
         }
     }
-    printf("%.6f\n", num[pop(infix)]); //输出infix的最后结果
+    printf("%.6f\n", num[-pop(infix)]); //输出infix的最后结果
     destroy(infix);
     destroy(postfix);
 }
