@@ -10,7 +10,6 @@ int main()
     double num[MAXSTACKSIZE] = {0}; //num数组用于储存读入的数字
     int cnt = 0;                    //cnt代表num的index
 
-    printf("I'm fine now.\n");
     //读入数据并直接转换为后缀表达式
     char ch;
     while ((ch = getchar()) != '=')
