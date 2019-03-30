@@ -4,8 +4,6 @@ Stack create(void)
     Stack S;
     S = (Stack)malloc(sizeof(*S));
     int i = 0;
-    // for (i = 0; i < MAXSTACKSIZE; i++)
-    //     S->array[i] = '0';
     S->top = 0;
     return S;
 }

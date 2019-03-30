@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAXSTACKSIZE 200 //用于创建栈和double数组
+#define MAXSTACKSIZE 1000 //用于创建栈和double数组
 
 typedef struct _Stack
 {
