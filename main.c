@@ -35,42 +35,55 @@ int main()
 
     //读入数据并直接转换为后缀表达式
     char ch;
-    while ((ch = getchar()) != '=')
+
+    int flag = 1;
+    while (flag)
     {
-        if (isspace(ch)) //跳过空格
-            continue;
-        switch (ch)
+        flag = 0;
+        while ((ch = getchar()) != '=')
         {
-        case '*':
-        case '/':
-        case '(':
-            push(infix, ch); //低优先级的运算符直接压栈到infix
-            break;
-        case '+':
-        case '-':
-            while (peek(infix) == '*' || peek(infix) == '/')
-                push(postfix, pop(infix)); //高优先级的运算符先将infix中低优先级的出栈到postfix再压栈到infix
-            push(infix, ch);
-            break;
-        case ')':
-            while (peek(infix) != '(') //将infix中的运算符出栈，直到遇到'('，注意'('也要出栈，但不进入postfix
-                push(postfix, pop(infix));
-            pop(infix);
-            break;
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        case '0':
-            ungetc(ch, stdin);
-            scanf("%lf", &num[cnt++]); //利用一个额外的数组进行数字的储存，以便double类型的实现，cnt是该数组的指针（也可以用栈直接进行实现）
-            push(postfix, -cnt + 1);   //遇到数字直接进postfix
-            break;
+            if (isspace(ch)) //跳过空格
+                continue;
+            switch (ch)
+            {
+            case '*':
+            case '/':
+            case '(':
+                push(infix, ch); //低优先级的运算符直接压栈到infix
+                break;
+            case '+':
+            case '-':
+                while (peek(infix) == '*' || peek(infix) == '/')
+                    push(postfix, pop(infix)); //高优先级的运算符先将infix中低优先级的出栈到postfix再压栈到infix
+                push(infix, ch);
+                break;
+            case ')':
+                while (peek(infix) != '(') //将infix中的运算符出栈，直到遇到'('，注意'('也要出栈，但不进入postfix
+                    push(postfix, pop(infix));
+                pop(infix);
+                break;
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '0':
+                ungetc(ch, stdin);
+                scanf("%lf", &num[cnt++]); //利用一个额外的数组进行数字的储存，以便double类型的实现，cnt是该数组的指针（也可以用栈直接进行实现）
+                push(postfix, -cnt + 1);   //遇到数字直接进postfix
+                break;
+            default:
+                printf("Bad input. Try again.\n");
+                postfix->top = 0;
+                infix->top = 0;
+                flag = 1;
+                fflush(stdin);
+                break;
+            }
         }
     }
     while (peek(infix) != '0') //倒序postfix剩余元素进infix
