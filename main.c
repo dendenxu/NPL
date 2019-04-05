@@ -19,6 +19,7 @@
 - stack.c主体设计及实现：付仁泓
 - 项目总体调试及初步测试运行：徐震
 - 简单函数计算功能设计及实现：陈九润（待完成）
+- 我好了，我递归了简单函数功能-徐震
 */
 
 #include <stdio.h>
@@ -137,57 +138,57 @@ double npl()
                     num[cnt++] = sin(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "pow"))
+                else if (!strcmp(temp, "pow"))
                 {
                     num[cnt++] = pow(npl(), npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "cos"))
+                else if (!strcmp(temp, "cos"))
                 {
                     num[cnt++] = cos(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "sqrt"))
+                else if (!strcmp(temp, "sqrt"))
                 {
                     num[cnt++] = sqrt(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "abs"))
+                else if (!strcmp(temp, "abs"))
                 {
                     num[cnt++] = abs(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "tan"))
+                else if (!strcmp(temp, "tan"))
                 {
                     num[cnt++] = tan(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "atan"))
+                else if (!strcmp(temp, "atan"))
                 {
                     num[cnt++] = atan(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "asin"))
+                else if (!strcmp(temp, "asin"))
                 {
                     num[cnt++] = asin(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "acos"))
+                else if (!strcmp(temp, "acos"))
                 {
                     num[cnt++] = acos(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "exp"))
+                else if (!strcmp(temp, "exp"))
                 {
                     num[cnt++] = exp(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "log"))
+                else if (!strcmp(temp, "log"))
                 {
                     num[cnt++] = log(npl());
                     push(postfix, -cnt + 1);
                 }
-                if (!strcmp(temp, "floor"))
+                else if (!strcmp(temp, "floor"))
                 {
                     num[cnt++] = floor(npl());
                     push(postfix, -cnt + 1);
