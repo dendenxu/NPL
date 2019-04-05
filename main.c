@@ -23,10 +23,86 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <math.h> //现阶段还没用到函数
-#include "stack.h"
+#include <string.h>
+#include <math.h>         //现阶段还没用到函数
+#define MAXSTACKSIZE 1000 //用于创建栈和double数组
+
+typedef struct _Stack
+{
+    char array[MAXSTACKSIZE];
+    int top; //栈顶index
+} * Stack;
+
+Stack create(void);             //初始化栈（array和top都变为零）
+char pop(Stack stack);          //栈为空时返回'0'
+char push(Stack stack, char c); //达到最大值后报错并结束程序
+char peek(Stack stack);         //栈为空时返回'0'
+void destroy(Stack stack);      //清空该栈的内容（其实没啥卵用因为C里面没有对象或者析构函数）
+char peekmid(Stack stack, int index);
+double npl(void);
 
 int main()
+{
+    printf("%g", npl());
+}
+
+Stack create(void)
+{
+    Stack S;
+    S = (Stack)malloc(sizeof(*S));
+    int i = 0;
+    S->top = 0;
+    return S;
+}
+
+char pop(Stack stack)
+{
+    if (stack->top == 0)
+        return '0';
+    else
+    {
+        char a = stack->array[--stack->top];
+        return a;
+    }
+}
+
+char push(Stack stack, char c)
+{
+    if (stack->top == MAXSTACKSIZE - 1)
+    {
+        printf("Stack is FULL");
+        exit(1);
+    }
+    else
+    {
+        stack->array[stack->top++] = c;
+    }
+}
+
+char peek(Stack stack)
+{
+    if (stack->top <= 0)
+        return '0';
+    else
+    {
+        return stack->array[stack->top - 1];
+    }
+}
+
+void destroy(Stack stack)
+{
+    free(stack);
+    stack == NULL;
+}
+
+char peekmid(Stack stack, int index)
+{
+    if (index >= stack->top)
+        return '0';
+    return stack->array[index];
+}
+
+double npl()
 {
     Stack infix = create();
     Stack postfix = create();
@@ -37,19 +113,94 @@ int main()
     char ch;
 
     int flag = 1;
+    int flag2 = 0;
     while (flag)
     {
-        flag = 0;
-        while ((ch = getchar()) != '=')
+        while ((flag && (ch = getchar()) != '='))
         {
             if (isspace(ch)) //跳过空格
                 continue;
+            if (isalpha(ch))
+            {
+                char c;
+                int i = 0;
+                char temp[MAXSTACKSIZE];
+                while (isalpha(c = getchar()))
+                {
+                    temp[i++] = ch;
+                    ch = c;
+                }
+                temp[i++] = ch;
+                temp[i] = NULL;
+                if (!strcmp(temp, "sin"))
+                {
+                    num[cnt++] = sin(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "pow"))
+                {
+                    num[cnt++] = pow(npl(), npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "cos"))
+                {
+                    num[cnt++] = cos(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "sqrt"))
+                {
+                    num[cnt++] = sqrt(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "abs"))
+                {
+                    num[cnt++] = abs(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "tan"))
+                {
+                    num[cnt++] = tan(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "atan"))
+                {
+                    num[cnt++] = atan(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "asin"))
+                {
+                    num[cnt++] = asin(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "acos"))
+                {
+                    num[cnt++] = acos(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "exp"))
+                {
+                    num[cnt++] = exp(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "log"))
+                {
+                    num[cnt++] = log(npl());
+                    push(postfix, -cnt + 1);
+                }
+                if (!strcmp(temp, "floor"))
+                {
+                    num[cnt++] = floor(npl());
+                    push(postfix, -cnt + 1);
+                }
+                continue;
+            }
             switch (ch)
             {
             case '*':
             case '/':
             case '(':
                 push(infix, ch); //低优先级的运算符直接压栈到infix
+                flag2 = 1;
                 break;
             case '+':
             case '-':
@@ -58,9 +209,15 @@ int main()
                 push(infix, ch);
                 break;
             case ')':
-                while (peek(infix) != '(') //将infix中的运算符出栈，直到遇到'('，注意'('也要出栈，但不进入postfix
-                    push(postfix, pop(infix));
-                pop(infix);
+                if (flag2)
+                {
+                    while (peek(infix) != '(') //将infix中的运算符出栈，直到遇到'('，注意'('也要出栈，但不进入postfix
+                        push(postfix, pop(infix));
+                    pop(infix);
+                    flag2 = 0;
+                }
+                else
+                    flag = 0;
                 break;
             case '1':
             case '2':
@@ -76,6 +233,10 @@ int main()
                 scanf("%lf", &num[cnt++]); //利用一个额外的数组进行数字的储存，以便double类型的实现，cnt是该数组的指针（也可以用栈直接进行实现）
                 push(postfix, -cnt + 1);   //遇到数字直接进postfix
                 break;
+
+            case ',':
+                flag = 0;
+                break;
             default:
                 printf("Bad input. Try again.\n");
                 postfix->top = 0;
@@ -85,6 +246,7 @@ int main()
                 break;
             }
         }
+        flag = 0;
     }
     while (peek(infix) != '0') //倒序postfix剩余元素进infix
         push(postfix, pop(infix));
@@ -130,7 +292,8 @@ int main()
             break;
         }
     }
-    printf("%.6g\n", num[-pop(infix)]); //输出infix的最后结果
+    double result = num[-pop(infix)]; //输出infix的最后结果
     destroy(infix);
     destroy(postfix);
+    return result;
 }
