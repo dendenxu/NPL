@@ -209,10 +209,18 @@ double func()
             ch = c;
         }
         temp[i++] = ch;
-        temp[i] = NULL;
+        temp[i] = 0;
 
         if (!strcmp(temp, "pi") || !strcmp(temp, "PI") || !strcmp(temp, "Pi"))
+        {
+            ungetc(c, stdin);
             return 3.1415926535;
+        }
+        if (!strcmp(temp, "e"))
+        {
+            ungetc(c, stdin);
+            return 2.71828;
+        }
 
         if (wrong)
             return 1;
