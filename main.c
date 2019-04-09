@@ -113,8 +113,7 @@ Stack create(void);             //初始化栈（array和top都变为零）
 char pop(Stack stack);          //栈为空时返回'0'
 void push(Stack stack, char c); //达到最大值后报错并结束程序
 char peek(Stack stack);         //栈为空时返回'0'
-void destroy(
-    Stack stack); //清空该栈的内容（其实没啥卵用因为C里面没有对象或者析构函数）
+void destroy(Stack stack);      //清空该栈的内容（其实没啥用因为C里面没有对象或者析构函数）
 char peekmid(Stack stack, int index);
 double npl(void);
 
@@ -123,12 +122,15 @@ int wrong;
 int main()
 {
     double output;
-    do
+    while (1)
     {
-        wrong = 0;
-        output = npl();
-    } while (wrong);
-    printf("%g", output);
+        do
+        {
+            wrong = 0;
+            output = npl();
+        } while (wrong);
+        printf("%g\n", output);
+    }
 }
 
 Stack create(void)
@@ -208,6 +210,9 @@ double func()
         }
         temp[i++] = ch;
         temp[i] = NULL;
+
+        if (!strcmp(temp, "pi") || !strcmp(temp, "PI") || !strcmp(temp, "Pi"))
+            return 3.1415926535;
 
         if (wrong)
             return 1;
@@ -299,7 +304,7 @@ double npl()
             {
             case '*':
             case '/':
-                push(infix, ch); //低优先级的运算符直接压栈到infix
+                push(infix, ch); //高优先级的运算符直接压栈到infix
                 break;
             case '(':
                 push(infix, ch); //低优先级的运算符直接压栈到infix
@@ -308,7 +313,7 @@ double npl()
             case '+':
             case '-':
                 while (peek(infix) == '*' || peek(infix) == '/')
-                    push(postfix, pop(infix)); //高优先级的运算符先将infix中低优先级的出栈到postfix再压栈到infix
+                    push(postfix, pop(infix)); //低优先级的运算符先将infix中高优先级的出栈到postfix再压栈到infix
                 push(infix, ch);
                 break;
             case ')':
@@ -363,15 +368,12 @@ double npl()
     double num1, num2;
     while ((ch = peekmid(postfix, index++)) != '0')
     {
-        if (isspace(ch)) //跳过空格
-            continue;
         if (ch <= 0) //数字直接压栈到infix
         {
             push(infix, ch);
             continue;
         }
-        switch (
-            ch) //对postfix加减乘除直接进行运算，并将运算结果压栈到infix
+        switch (ch) //对postfix加减乘除直接进行运算，并将运算结果压栈到infix
         {
         case '+':
             re = num[-pop(infix)] + num[-pop(infix)];
