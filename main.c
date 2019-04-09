@@ -134,6 +134,90 @@ char peekmid(Stack stack, int index)
     return stack->array[index];
 }
 
+double func()
+{
+    char ch = getchar();
+    if (isdigit(ch))
+    {
+        double re;
+        ungetc(ch, stdin);
+        scanf("%lf", &re);
+        return re;
+    }
+    char c;
+    int i = 0;
+    char temp[MAXSTACKSIZE];
+    while (isalpha(c = getchar()))
+    {
+        temp[i++] = ch;
+        ch = c;
+    }
+    temp[i++] = ch;
+    temp[i] = NULL;
+    while (isspace(c)) //跳过空格
+        c = getchar();
+
+    double tempNum;
+
+    if (c != '(')
+    {
+        ungetc(c, stdin);
+        tempNum = func();
+    }
+    else
+        tempNum = npl();
+
+    if (!strcmp(temp, "sin"))
+    {
+        return sin(tempNum);
+    }
+    else if (!strcmp(temp, "pow"))
+    {
+        double temp1 = npl(), temp2 = npl(); //最好不要直接在pow函数中调用两个npl，执行顺序是个变数。
+        return pow(temp1, temp2);
+    }
+    else if (!strcmp(temp, "cos"))
+    {
+        return cos(tempNum);
+    }
+    else if (!strcmp(temp, "sqrt"))
+    {
+        return sqrt(tempNum);
+    }
+    else if (!strcmp(temp, "abs"))
+    {
+        return abs(tempNum);
+    }
+    else if (!strcmp(temp, "tan"))
+    {
+        return tan(tempNum);
+    }
+    else if (!strcmp(temp, "atan"))
+    {
+        return atan(tempNum);
+    }
+    else if (!strcmp(temp, "asin"))
+    {
+        return asin(tempNum);
+    }
+    else if (!strcmp(temp, "acos"))
+    {
+        return acos(tempNum);
+    }
+    else if (!strcmp(temp, "exp"))
+    {
+        return exp(tempNum);
+    }
+    else if (!strcmp(temp, "log"))
+    {
+        return log(tempNum);
+    }
+    else if (!strcmp(temp, "floor"))
+    {
+        return floor(tempNum);
+    }
+}
+
 double npl()
 {
     Stack infix = create();
@@ -154,139 +238,9 @@ double npl()
                 continue;
             if (isalpha(ch))
             {
-                char c;
-                int i = 0;
-                char temp[MAXSTACKSIZE];
-                while (isalpha(c = getchar()))
-                {
-                    temp[i++] = ch;
-                    ch = c;
-                }
-                temp[i++] = ch;
-                temp[i] = NULL;
-                while (c != '(') //跳过空格
-                    c = getchar();
-                if (c != '(')
-                {
-                    ungetc(c, stdin);
-                    scanf("%lf", &num[cnt++]);
-                    if (!strcmp(temp, "sin"))
-                    {
-                        num[cnt - 1] = sin(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "cos"))
-                    {
-                        num[cnt - 1] = cos(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "sqrt"))
-                    {
-                        num[cnt - 1] = sqrt(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "abs"))
-                    {
-                        num[cnt - 1] = abs(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "tan"))
-                    {
-                        num[cnt - 1] = tan(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "atan"))
-                    {
-                        num[cnt - 1] = atan(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "asin"))
-                    {
-                        num[cnt - 1] = asin(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "acos"))
-                    {
-                        num[cnt - 1] = acos(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "exp"))
-                    {
-                        num[cnt - 1] = exp(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "log"))
-                    {
-                        num[cnt - 1] = log(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                    else if (!strcmp(temp, "floor"))
-                    {
-                        num[cnt - 1] = floor(num[cnt - 1]);
-                        push(postfix, -cnt + 1);
-                    }
-                }
-                else if (!strcmp(temp, "sin"))
-                {
-                    num[cnt++] = sin(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "pow"))
-                {
-                    double temp1 = npl(), temp2 = npl(); //最好不要直接在pow函数中调用两个npl，执行顺序是个变数。
-                    num[cnt++] = pow(temp1, temp2);
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "cos"))
-                {
-                    num[cnt++] = cos(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "sqrt"))
-                {
-                    num[cnt++] = sqrt(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "abs"))
-                {
-                    num[cnt++] = abs(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "tan"))
-                {
-                    num[cnt++] = tan(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "atan"))
-                {
-                    num[cnt++] = atan(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "asin"))
-                {
-                    num[cnt++] = asin(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "acos"))
-                {
-                    num[cnt++] = acos(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "exp"))
-                {
-                    num[cnt++] = exp(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "log"))
-                {
-                    num[cnt++] = log(npl());
-                    push(postfix, -cnt + 1);
-                }
-                else if (!strcmp(temp, "floor"))
-                {
-                    num[cnt++] = floor(npl());
-                    push(postfix, -cnt + 1);
-                }
+                ungetc(ch, stdin);
+                num[cnt++] = func();
+                push(postfix, -cnt + 1);
                 continue;
             }
             switch (ch)
