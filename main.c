@@ -4,7 +4,7 @@
 url:https://github.com/dendenxu/npl
 git command:git clone https://github.com/dendenxu/npl.git
 
-
+为了后期方便调试，在最后的几个版本中将stack.c stack.h main.c几个文件进行了合并，内容没有发生实际变动。
 
 此项目
 1. 通过将用户输入的中缀表达式转换为后缀表达式
@@ -12,7 +12,7 @@ git command:git clone https://github.com/dendenxu/npl.git
 
 注意：
 1. 一切计算都是在假定用户输入格式正确的情况下进行的，如果输入的格式不是严格的中缀表达式，谁知道会发生什么
-2. 支持的运算符：+、 -、 *、 /、 =（=代表运算的结束）以及（、）
+2. 支持的运算符：+、 -、 *、 /、 =       =代表运算的结束以及     （左括号     和    ）右括号
 3. 支持的数据类型：双精度浮点类型（注意不可以将0.3写成.3，但是可以将3.0写成3.）
 4. 栈大小：1000*sizeof(char)，浮点数组大小：1000*sizeof(double)，用户需保证输入的计算式不会超出两者的限制，否则谁知道会发生什么
 5. 用户输入的数据中可以在任意地方放入空白字符，比如用户输入1+1=或者1 + 1 = 都可以得到正确的结果
@@ -27,6 +27,8 @@ git command:git clone https://github.com/dendenxu/npl.git
 - 项目总体调试及初步测试运行：徐震
 - 简单函数计算功能设计及实现：陈九润（待完成）
 - 我好了，我递归了简单函数功能-徐震
+- 我把不加括号的单值函数也实现了下（暂时是只能对单独的一个数进行操作）...-徐震
+
 */
 
 //原项目readme.md内容粘贴如下：
@@ -162,14 +164,77 @@ double npl()
                 }
                 temp[i++] = ch;
                 temp[i] = NULL;
-                if (!strcmp(temp, "sin"))
+                while (c != '(') //跳过空格
+                    c = getchar();
+                if (c != '(')
+                {
+                    ungetc(c, stdin);
+                    scanf("%lf", &num[cnt++]);
+                    if (!strcmp(temp, "sin"))
+                    {
+                        num[cnt - 1] = sin(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "cos"))
+                    {
+                        num[cnt - 1] = cos(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "sqrt"))
+                    {
+                        num[cnt - 1] = sqrt(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "abs"))
+                    {
+                        num[cnt - 1] = abs(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "tan"))
+                    {
+                        num[cnt - 1] = tan(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "atan"))
+                    {
+                        num[cnt - 1] = atan(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "asin"))
+                    {
+                        num[cnt - 1] = asin(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "acos"))
+                    {
+                        num[cnt - 1] = acos(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "exp"))
+                    {
+                        num[cnt - 1] = exp(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "log"))
+                    {
+                        num[cnt - 1] = log(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                    else if (!strcmp(temp, "floor"))
+                    {
+                        num[cnt - 1] = floor(num[cnt - 1]);
+                        push(postfix, -cnt + 1);
+                    }
+                }
+                else if (!strcmp(temp, "sin"))
                 {
                     num[cnt++] = sin(npl());
                     push(postfix, -cnt + 1);
                 }
                 else if (!strcmp(temp, "pow"))
                 {
-                    num[cnt++] = pow(npl(), npl());
+                    double temp1 = npl(), temp2 = npl(); //最好不要直接在pow函数中调用两个npl，执行顺序是个变数。
+                    num[cnt++] = pow(temp1, temp2);
                     push(postfix, -cnt + 1);
                 }
                 else if (!strcmp(temp, "cos"))
