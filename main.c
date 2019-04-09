@@ -61,8 +61,16 @@ git command:git clone https://github.com/dendenxu/npl.git
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <math.h>         //ÏÖ½×¶Î»¹Ã»ÓÃµ½º¯Êý
-#define MAXSTACKSIZE 1000 //ÓÃÓÚ´´½¨Õ»ºÍdoubleÊý×é
+#include <math.h>
+
+#define MAXSTACKSIZE 10000 //ÓÃÓÚ´´½¨Õ»ºÍdoubleÊý×é
+
+#define CLEARSTDIN                                    \
+    {                                                 \
+        int ch;                                       \
+        while ((ch = getchar()) != '\n' && ch != EOF) \
+            ;                                         \
+    }
 
 typedef struct _Stack
 {
@@ -78,9 +86,17 @@ void destroy(Stack stack);      //Çå¿Õ¸ÃÕ»µÄÄÚÈÝ£¨ÆäÊµÃ»É¶ÂÑÓÃÒòÎªCÀïÃæÃ»ÓÐ¶ÔÏó»
 char peekmid(Stack stack, int index);
 double npl(void);
 
+int wrong;
+
 int main()
 {
-    printf("%g", npl());
+    double output;
+    do
+    {
+        wrong = 0;
+        output = npl();
+    } while (wrong);
+    printf("%g", output);
 }
 
 Stack create(void)
@@ -141,6 +157,7 @@ char peekmid(Stack stack, int index)
 
 double func()
 {
+    //¶ÁÈëÓÃÓÚ±í´ïº¯ÊýµÄ×Ö·û´®
     char ch = getchar();
     if (isdigit(ch))
     {
@@ -149,77 +166,74 @@ double func()
         scanf("%lf", &re);
         return re;
     }
-    char c;
-    int i = 0;
-    char temp[MAXSTACKSIZE];
-    while (isalpha(c = getchar()))
+    else if (isalpha(ch))
     {
+        char c;
+        int i = 0;
+        char temp[MAXSTACKSIZE];
+        while (!wrong && isalpha(c = getchar()))
+        {
+            temp[i++] = ch;
+            ch = c;
+        }
         temp[i++] = ch;
-        ch = c;
-    }
-    temp[i++] = ch;
-    temp[i] = NULL;
-    while (isspace(c)) //Ìø¹ý¿Õ¸ñ
-        c = getchar();
+        temp[i] = NULL;
 
-    double tempNum;
+        if (wrong)
+            return 1;
 
-    if (c != '(')
-    {
-        ungetc(c, stdin);
-        tempNum = func();
-    }
-    else
-        tempNum = npl();
+        //Ìø¹ý¿Õ¸ñ
+        while (isspace(c))
+            c = getchar();
 
-    if (!strcmp(temp, "sin"))
-    {
-        return sin(tempNum);
-    }
-    else if (!strcmp(temp, "pow"))
-    {
-        double temp1 = npl(), temp2 = npl(); //×îºÃ²»ÒªÖ±½ÓÔÚpowº¯ÊýÖÐµ÷ÓÃÁ½¸önpl£¬Ö´ÐÐË³ÐòÊÇ¸ö±äÊý¡£
-        return pow(temp1, temp2);
-    }
-    else if (!strcmp(temp, "cos"))
-    {
-        return cos(tempNum);
-    }
-    else if (!strcmp(temp, "sqrt"))
-    {
-        return sqrt(tempNum);
-    }
-    else if (!strcmp(temp, "abs"))
-    {
-        return abs(tempNum);
-    }
-    else if (!strcmp(temp, "tan"))
-    {
-        return tan(tempNum);
-    }
-    else if (!strcmp(temp, "atan"))
-    {
-        return atan(tempNum);
-    }
-    else if (!strcmp(temp, "asin"))
-    {
-        return asin(tempNum);
-    }
-    else if (!strcmp(temp, "acos"))
-    {
-        return acos(tempNum);
-    }
-    else if (!strcmp(temp, "exp"))
-    {
-        return exp(tempNum);
-    }
-    else if (!strcmp(temp, "log"))
-    {
-        return log(tempNum);
-    }
-    else if (!strcmp(temp, "floor"))
-    {
-        return floor(tempNum);
+        double tempNum;
+        //È·¶¨functionÓ¦¸Ã¼ÆËãµÄÖµÊÇÊ²Ã´£¨ÕâÀï»á·¢ÉúÒ»ÏµÁÐº¯ÊýµÄ¶à´ÎµÝ¹é£©
+        if (c != '(') //ÉÏÃæµÄgetchar¶ÁÈëÁË¿Õ¸ñºóÃæµÄÒ»¸ö¶«Î÷
+        {
+            ungetc(c, stdin);
+            tempNum = func();
+        }
+        else
+            tempNum = npl();
+        if (wrong)
+            return 1;
+        //ÕâÒ»¶ÎËãÁé»îÐÔ±È½Ï¸ßµÄ£¬ÏëÒªµÄ»°ÉõÖÁ¿ÉÒÔ°ÑÄÜµ÷ÓÃµÄÏµÍ³ÀïËùÓÐµÄ¼ÆËãÐÍµÄdoubleº¯Êý¶¼Ìí¼Ó½øÈ¥
+        //Èç¹ûÓÃ±È½Ï¸ß¼¶µÄ·½Ê½£¬±ÈÈç¹þÏ£±í£¿»òÐí»á´ó·ù¶ÈÌá¸ßÐÔÄÜ£¿»òÕß¿¼ÂÇº¯ÊýÖ¸Õë£¬ÓÃswitch½¨Á¢ÀàËÆµÄ¹þÏ£±í£¿µ«ÕâÀï°üº¬µÄº¯ÊýÊµÔÚÌ«ÉÙ¡­¡­ÀûÓÃ¹þÏ£±íÌá¸ßµÄÐÔÄÜ»òÐí»¹Âú×ã²»ÁËcomplexityµÄ³£ÊýÏî¶ÔÐÔÄÜµÄÍÏÀÛ
+        //¶ÔÓÚpowÕâÖÖº¯Êý£¬ÓÐÁ½¸ö²ÎÊý£¬²»»á³öÏÖºóÃæ²»¼ÓÀ¨ºÅµÄÇé¿ö
+        if (!strcmp(temp, "pow"))
+        {
+            double temp1 = tempNum, temp2 = npl(); //×îºÃ²»ÒªÖ±½ÓÔÚpowº¯ÊýÖÐµ÷ÓÃÁ½¸önpl£¬Ö´ÐÐË³ÐòÊÇ¸ö±äÊý¡£
+            return pow(temp1, temp2);
+        }
+        else if (!strcmp(temp, "sin"))
+            return sin(tempNum);
+        else if (!strcmp(temp, "cos"))
+            return cos(tempNum);
+        else if (!strcmp(temp, "sqrt"))
+            return sqrt(tempNum);
+        else if (!strcmp(temp, "abs"))
+            return abs(tempNum);
+        else if (!strcmp(temp, "tan"))
+            return tan(tempNum);
+        else if (!strcmp(temp, "atan"))
+            return atan(tempNum);
+        else if (!strcmp(temp, "asin"))
+            return asin(tempNum);
+        else if (!strcmp(temp, "acos"))
+            return acos(tempNum);
+        else if (!strcmp(temp, "exp"))
+            return exp(tempNum);
+        else if (!strcmp(temp, "log"))
+            return log(tempNum);
+        else if (!strcmp(temp, "floor"))
+            return floor(tempNum);
+        else
+        {
+            printf("Bad input. Try again.\n");
+            CLEARSTDIN
+            wrong = 1;
+            return 1;
+        }
     }
 }
 
@@ -237,7 +251,7 @@ double npl()
     int flag2 = 0;
     while (flag)
     {
-        while ((flag && (ch = getchar()) != '='))
+        while ((!wrong && flag && (ch = getchar()) != '='))
         {
             if (isspace(ch)) //Ìø¹ý¿Õ¸ñ
                 continue;
@@ -254,7 +268,7 @@ double npl()
             case '/':
             case '(':
                 push(infix, ch); //µÍÓÅÏÈ¼¶µÄÔËËã·ûÖ±½ÓÑ¹Õ»µ½infix
-                flag2 = 1;
+                flag2 = 1;       //flag2ÓÃÓÚÅÐ¶ÏÊÇ·ñ´¦ÓÚºÏ·¨µÄÀ¨ºÅµ±ÖÐ£¨±ãÓÚµÝ¹éº¯ÊýµÄÊµÏÖ£©
                 break;
             case '+':
             case '-':
@@ -284,7 +298,7 @@ double npl()
             case '9':
             case '0':
                 ungetc(ch, stdin);
-                scanf("%lf", &num[cnt++]); //ÀûÓÃÒ»¸ö¶îÍâµÄÊý×é½øÐÐÊý×ÖµÄ´¢´æ£¬ÒÔ±ãdoubleÀàÐÍµÄÊµÏÖ£¬cntÊÇ¸ÃÊý×éµÄÖ¸Õë£¨Ò²¿ÉÒÔÓÃÕ»Ö±½Ó½øÐÐÊµÏÖ£©
+                scanf("%lf", &num[cnt++]); //ÀûÓÃÒ»¸ö¶îÍâµÄÊý×é½øÐÐÊý×ÖµÄ´¢´æ£¬ÒÔ±ãÖ±½ÓÀûÓÃscanf¶ÁÈëdoubleÀàÐÍ¹¦ÄÜµÄÊµÏÖ£¬cntÊÇ¸ÃÊý×éµÄÖ¸Õë£¨Ò²¿ÉÒÔÓÃÕ»Ö±½Ó½øÐÐÊµÏÖ£©
                 push(postfix, -cnt + 1);   //Óöµ½Êý×ÖÖ±½Ó½øpostfix
                 break;
 
@@ -292,16 +306,19 @@ double npl()
                 flag = 0;
                 break;
             default:
+                //ÊäÈë¸ñÊ½ÓÐÎó£¬Çå¿ÕËùÓÐ¶ÑÕ»
                 printf("Bad input. Try again.\n");
-                postfix->top = 0;
-                infix->top = 0;
-                flag = 1;
-                fflush(stdin);
+                CLEARSTDIN
+                wrong = 1;
                 break;
             }
         }
         flag = 0;
     }
+
+    if (wrong)
+        return 1;
+
     while (peek(infix) != '0') //µ¹ÐòpostfixÊ£ÓàÔªËØ½øinfix
         push(postfix, pop(infix));
 
@@ -349,5 +366,6 @@ double npl()
     double result = num[-pop(infix)]; //Êä³öinfixµÄ×îºó½á¹û
     destroy(infix);
     destroy(postfix);
+    wrong = 0;
     return result;
 }
