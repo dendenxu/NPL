@@ -229,22 +229,25 @@ double npl()
         {
         case '^':
             push(infix, ch); //高优先级的运算符直接压栈到infix
+            prefix = 1;
             break;
         case '*':
         case '/':
             while (peek(infix) == '^')
                 push(postfix, pop(infix)); //低优先级的运算符先将infix中高优先级的出栈到postfix再压栈到infix
             push(infix, ch);
+            prefix = 1;
             break;
         case '(':
-            prefix = 0;
             push(infix, ch);
             flag2 = 1; // flag2用于判断是否处于合法的括号当中（便于递归函数的实现）
+            prefix = 1;
             break;
         case '+':
             while (peek(infix) == '*' || peek(infix) == '/' || peek(infix) == '^')
                 push(postfix, pop(infix)); //低优先级的运算符先将infix中高优先级的出栈到postfix再压栈到infix
             push(infix, ch);
+            prefix = 1;
             break;
         case '-':
             if (prefix)
@@ -254,9 +257,10 @@ double npl()
                 push(postfix, -cnt + 1);   //遇到数字直接进postfix
                 break;
             }
-            while (peek(infix) == '*' || peek(infix) == '/')
+            while (peek(infix) == '*' || peek(infix) == '/' || peek(infix) == '^')
                 push(postfix, pop(infix)); //低优先级的运算符先将infix中高优先级的出栈到postfix再压栈到infix
             push(infix, ch);
+            prefix = 1;
             break;
         case ')':
             if (flag2)
@@ -268,6 +272,7 @@ double npl()
             }
             else
                 flag = 0;
+            prefix = 0;
             break;
         case '1':
         case '2':
@@ -282,6 +287,7 @@ double npl()
             ungetc(ch, stdin);
             scanf("%lf", &num[cnt++]); //利用一个额外的数组进行数字的储存，以便直接利用scanf读入double类型功能的实现，cnt是该数组的指针（也可以用栈直接进行实现）
             push(postfix, -cnt + 1);   //遇到数字直接进postfix
+            prefix = 0;
             break;
 
         case ',':
@@ -294,7 +300,6 @@ double npl()
             wrong = 1;
             break;
         }
-        prefix = 0;
     }
 
     if (wrong)
