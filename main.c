@@ -227,17 +227,22 @@ double npl()
         }
         switch (ch)
         {
+        case '^':
+            push(infix, ch); //高优先级的运算符直接压栈到infix
+            break;
         case '*':
         case '/':
-            push(infix, ch); //高优先级的运算符直接压栈到infix
+            while (peek(infix) == '^')
+                push(postfix, pop(infix)); //低优先级的运算符先将infix中高优先级的出栈到postfix再压栈到infix
+            push(infix, ch);
             break;
         case '(':
             prefix = 0;
-            push(infix, ch); //低优先级的运算符直接压栈到infix
-            flag2 = 1;       // flag2用于判断是否处于合法的括号当中（便于递归函数的实现）
+            push(infix, ch);
+            flag2 = 1; // flag2用于判断是否处于合法的括号当中（便于递归函数的实现）
             break;
         case '+':
-            while (peek(infix) == '*' || peek(infix) == '/')
+            while (peek(infix) == '*' || peek(infix) == '/' || peek(infix) == '^')
                 push(postfix, pop(infix)); //低优先级的运算符先将infix中高优先级的出栈到postfix再压栈到infix
             push(infix, ch);
             break;
@@ -332,6 +337,13 @@ double npl()
             num1 = num[-pop(infix)];
             num2 = num[-pop(infix)];
             re = num2 / num1;
+            num[cnt++] = re;
+            push(infix, -cnt + 1);
+            break;
+        case '^':
+            num1 = num[-pop(infix)];
+            num2 = num[-pop(infix)];
+            re = pow(num2, num1);
             num[cnt++] = re;
             push(infix, -cnt + 1);
             break;
